@@ -1,0 +1,131 @@
+rootkit后门检测工具
+project URL: 
+http://www.chkrootkit.org
+ftp://ftp.pangeia.com.br/pub/seg/pac/chkrootkit.tar.gz 
+操作系统：CentOS
+
+1.安装编译工具包
+[root@localhost ~]# yum install -y gcc gcc-c++ make glibc-static
+
+2.到路径/usr/local/src/安装rootkit
+[root@localhost ~]# cd /usr/local/src/
+[root@localhost src]# wget ftp://ftp.pangeia.com.br/pub/seg/pac/chkrootkit.tar.gz  //使用wget下载工具
+[root@localhost src]# tar -zxvf chkrootkit.tar.gz //解压
+[root@localhost ~]# cd chkrootkit-0.53
+[root@localhost chkrootkit-0.53]# make sense //安装
+[root@localhost chkrootkit-0.53]# mv /usr/local/src/chkrootkit-0.53/ /usr/local/chkrootkit //拷贝到安装目录
+
+3.使用chkrootkit
+[root@localhost chkrootkit-0.53]# /usr/local/chkrootkit/chkrootkit
+[root@localhost chkrootkit-0.53]# cd /usr/local/chkrootkit
+[root@localhost chkrootkit]# ./chkrootkit | grep INFECTED //出现INFECTED就说明系统可能有问题了
+[root@localhost chkrootkit]# 
+
+4.chkrootkit使用说明
+Usage: ./chkrootkit [options] [test ...]
+Options:
+-h 显示帮助信息
+-V 显示版本信息
+-l 显示测试内容
+-d debug模式，显示检测过程的相关指令程序
+-q 安静模式，只显示有问题部分
+-x 高级模式，显示所有检测结果
+-r dir 设定指定的目录为根目录
+-p dir1:dir2:dirN 检测指定目录
+-n 跳过NFS连接的目录
+
+[root@localhost chkrootkit]# ./chkrootkit  -V
+chkrootkit version 0.53
+[root@localhost chkrootkit]# ./chkrootkit  -h
+Usage: ./chkrootkit [options] [test ...]
+Options:
+        -h                show this help and exit
+        -V                show version information and exit
+        -l                show available tests and exit
+        -d                debug
+        -q                quiet mode
+        -x                expert mode
+        -r dir            use dir as the root directory
+        -p dir1:dir2:dirN path for the external commands used by chkrootkit
+        -n                skip NFS mounted dirs
+[root@localhost chkrootkit]# ./chkrootkit  -h > log.txt 2>&1 //输将输出信息写到log.txt中
+Usage: ./chkrootkit [options] [test ...]
+Options:
+        -h                show this help and exit
+        -V                show version information and exit
+        -l                show available tests and exit
+        -d                debug
+        -q                quiet mode
+        -x                expert mode
+        -r dir            use dir as the root directory
+        -p dir1:dir2:dirN path for the external commands used by chkrootkit
+        -n                skip NFS mounted dirs
+//- “2>&1”表示将标准错误输出转变为标准输出，可以将错误信息也输出到日志文件中（0-> stdin, 1->stdout, 2->stderr）
+[root@localhost chkrootkit]# ls -la | tee -a ls.txt //输出结果及打印到ls文本
+total 196
+drwxr-xr-x   2 root root  4096 Aug 31 13:04 .
+drwxr-xr-x. 14 root root   160 Aug 31 12:34 ..
+-rw-r--r--   1 root root     0 Aug 31 12:58 1.txt
+-r--r--r--   1 root root  4680 Jan 12  2019 ACKNOWLEDGMENTS
+-r--r--r--   1 root root  7195 Jun  7  2017 check_wtmpx.c
+-r--r--r--   1 root root  7126 Jun  7  2017 chkdirs.c
+-r--r--r--   1 root root  7855 Jun  7  2017 chklastlog.c
+-r--r--r--   1 root root 10028 Jun  7  2017 chkproc.c
+-rwxr-xr-x   1 root root 82981 Feb 11  2019 chkrootkit
+-r--r--r--   1 root root   582 Feb 11  2019 chkrootkit.lsm
+-r--r--r--   1 root root  5965 Jun  7  2017 chkutmp.c
+-r--r--r--   1 root root  2299 Jun  7  2017 chkwtmp.c
+-r--r--r--   1 root root  1343 Jun  7  2017 COPYRIGHT
+-r--r--r--   1 root root  9023 Jan 12  2019 ifpromisc.c
+-rw-r--r--   1 root root     0 Aug 31 12:59 log.txt
+-rw-r--r--   1 root root     0 Aug 31 13:04 ls.txt
+-r--r--r--   1 root root  1635 Jun  7  2017 Makefile
+-r--r--r--   1 root root 14998 Jan 19  2019 README
+-r--r--r--   1 root root  1323 Jun  7  2017 README.chklastlog
+-r--r--r--   1 root root  1292 Jun  7  2017 README.chkwtmp
+-r--r--r--   1 root root  2531 Jun  7  2017 strings.c
+[root@localhost chkrootkit]# cat -n ls.txt 
+     1  total 196
+     2  drwxr-xr-x   2 root root  4096 Aug 31 13:04 .
+     3  drwxr-xr-x. 14 root root   160 Aug 31 12:34 ..
+     4  -rw-r--r--   1 root root     0 Aug 31 12:58 1.txt
+     5  -r--r--r--   1 root root  4680 Jan 12  2019 ACKNOWLEDGMENTS
+     6  -r--r--r--   1 root root  7195 Jun  7  2017 check_wtmpx.c
+     7  -r--r--r--   1 root root  7126 Jun  7  2017 chkdirs.c
+     8  -r--r--r--   1 root root  7855 Jun  7  2017 chklastlog.c
+     9  -r--r--r--   1 root root 10028 Jun  7  2017 chkproc.c
+    10  -rwxr-xr-x   1 root root 82981 Feb 11  2019 chkrootkit
+    11  -r--r--r--   1 root root   582 Feb 11  2019 chkrootkit.lsm
+    12  -r--r--r--   1 root root  5965 Jun  7  2017 chkutmp.c
+    13  -r--r--r--   1 root root  2299 Jun  7  2017 chkwtmp.c
+    14  -r--r--r--   1 root root  1343 Jun  7  2017 COPYRIGHT
+    15  -r--r--r--   1 root root  9023 Jan 12  2019 ifpromisc.c
+    16  -rw-r--r--   1 root root     0 Aug 31 12:59 log.txt
+    17  -rw-r--r--   1 root root     0 Aug 31 13:04 ls.txt
+    18  -r--r--r--   1 root root  1635 Jun  7  2017 Makefile
+    19  -r--r--r--   1 root root 14998 Jan 19  2019 README
+    20  -r--r--r--   1 root root  1323 Jun  7  2017 README.chklastlog
+    21  -r--r--r--   1 root root  1292 Jun  7  2017 README.chkwtmp
+    22  -r--r--r--   1 root root  2531 Jun  7  2017 strings.c
+[root@localhost chkrootkit]# yum install -y gcc | tee -a yumlog.txt
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+ * base: mirrors.aliyun.com
+ * epel: mirror01.idc.hinet.net
+ * extras: mirrors.aliyun.com
+ * updates: mirrors.aliyun.com
+Package gcc-4.8.5-36.el7_6.2.x86_64 already installed and latest version
+Nothing to do
+[root@localhost chkrootkit]# cat -n yumlog.txt 
+     1  Loaded plugins: fastestmirror
+     2  Loaded plugins: fastestmirror
+     3  Loading mirror speeds from cached hostfile
+     4   * base: mirrors.aliyun.com
+     5   * epel: mirror01.idc.hinet.net
+     6   * extras: mirrors.aliyun.com
+     7   * updates: mirrors.aliyun.com
+     8  Package gcc-4.8.5-36.el7_6.2.x86_64 already installed and latest version
+     9  Nothing to do
+
+
+
